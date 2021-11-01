@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
+
+<!--    <display-name>basic-spring-project</display-name>-->
+
+    <welcome-file-list>
+        <!--Welcome file should be under webapp folder-->
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+    <servlet>
+        <servlet-name>dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+
+        <!--If we do not mention this {load-on-startup}, spring will not be able to initialize the Servlet-->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <!--The Spring looks for this dispatcher configuration in /WEB-INF/dispatcher-servlet.xml file by default-->
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+
+    <listener>
+        <!--This listener is responsible for loading the application context. It is mandatory-->
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <!--If we do not specify this contextConfigLocation, the ContextLoaderListener will look for /WEB-INF/applicationContext.xml-->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            /WEB-INF/application-context.xml
+            /WEB-INF/persistency-beans.xml
+        </param-value>
+    </context-param>
+
+    <!--In case we have multiple application context files-->
+    <!--Method 1: PREFERABLE because, this allows me to keep all contexts isolated from each other. -->
+    <!--<context-param>
+        <param-name> contextConfigLocation </param-name>
+        <param-value>
+            applicationContext1.xml
+            applicationContext2.xml
+        </param-value>
+    </context-param>-->
+
+    <!--Method 2: import other context files into the primary applicationContext.xml-->
+<!--    <import resource="applicationContext-hibernate.xml"/>-->
+</web-app>

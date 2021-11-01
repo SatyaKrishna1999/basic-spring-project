@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--To load external configuration properties-->
+    <context:property-placeholder location="classpath:configuration.properties" />
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${hibernate.connection.driver}" />
+        <property name="url" value="${hibernate.jdbc.url}" />
+        <property name="username" value="${hibernate.jdbc.username}" />
+        <property name="password" value="${hibernate.jdbc.password}" />
+    </bean>
+
+    <!--Bean for transaction manager is required to instantiate transaction-->
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" >
+        <property name="dataSource" ref="dataSource" />
+        <property name="configLocation" value="classpath:META-INF/hibernate.cfg.xml" />
+        <property name="hibernateProperties" >
+            <props>
+                <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+                <prop key="show_sql">${hibernate.show_sql}</prop>
+                <prop key="hibernate.hbm2ddl.auto">${hibernate.auto}</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!--This will enable the usage of @Transactional-->
+    <tx:annotation-driven />
+
+    <bean id="samplePersister" class="com.demo.persistency.impl.SamplePersisterImpl" >
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+
+<!--    <bean id="txAspect" class="com.demo.aop.TransactionAspect"/>-->
+
+
+    <!--Transaction AOP-->
+    <tx:advice id="adviceNewTx" transaction-manager="transactionManager" >
+        <tx:attributes>
+            <tx:method name="saveNewTx" propagation="REQUIRES_NEW" rollback-for="Exception" />
+            <tx:method name="deleteNewTx" propagation="REQUIRES_NEW" rollback-for="Exception" />
+            <tx:method name="getNewTx" propagation="REQUIRES_NEW" rollback-for="Exception" />
+            <tx:method name="update*" propagation="REQUIRES_NEW" rollback-for="Exception" />
+        </tx:attributes>
+    </tx:advice>
+
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="get" propagation="REQUIRED" read-only="true" />
+            <tx:method name="save" propagation="REQUIRED"/>
+            <tx:method name="delete" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <tx:advice id="txAdviceService" transaction-manager="transactionManager" >
+        <tx:attributes>
+            <tx:method name="get*" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--Enabling @AspectJ annotations support-->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <aop:config>
+        <aop:pointcut id="newTxAdvicePointCut" expression="execution(public * com.demo.persistency.impl.*.getNewTx(..))
+                            or execution(public * com.demo.persistency.impl.*.saveNewTx(..))
+                            or execution(public * com.demo.persistency.impl.*.deleteNewTx(..))
+                            or execution(public * com.demo.service.impl.*.saveNewTx(..))
+                            or execution(public * com.demo.persistency.*.*.updatenewTx(..))"/>
+
+        <aop:pointcut id="txAdvicePointCut" expression="execution(public * com.demo.persistency.impl.*.save(..))
+                            or execution(public * com.demo.persistency.impl.*.get(..))
+                            or execution(public * com.demo.persistency.impl.*.update(..))
+                            or execution(public * com.demo.persistency.impl.*.delete(..))"/>
+
+        <aop:pointcut id="txServiceAdvicePointCut" expression="execution(public * com.demo.service.impl.*.get*(..))
+                            or execution(public * com.demo.service.impl.*.save*(..))"/>
+
+        <aop:advisor advice-ref="adviceNewTx" pointcut-ref="newTxAdvicePointCut" order="0"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txAdvicePointCut" order="0"/>
+        <aop:advisor advice-ref="txAdviceService" pointcut-ref="txServiceAdvicePointCut" order="0"/>
+    </aop:config>
+</beans>

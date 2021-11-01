@@ -1,0 +1,21 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-access="field">
+    <class name="com.demo.model.Employee" table="EMPLOYEE">
+
+        <meta attribute="class-description">
+            This class contains the Employee details.
+        </meta>
+
+        <id name="databaseId" type="int" column="EMP_ID">
+            <generator class="increment"/>
+        </id>
+
+        <property name="name" column="EMP_NAME" type="string"/>
+        <property name="role" column="ROLE" type="string"/>
+
+    </class>
+</hibernate-mapping>

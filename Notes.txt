@@ -1,0 +1,95 @@
+## Spring MVC Project Folder Structure:
+----------------------------------------
+
+├── src
+│   └── main
+│       ├── java
+│       │   └── com
+│       │       └── hellokoding
+│       │           └── hello
+│       │               └── web
+│       │                   └── YourClass.java
+│       ├── resources
+│       │   ├── application.properties
+│       │   └── logback.xml
+│       └── webapp
+│           ├── resources
+│           │   ├── css
+│           │   │   └── bootstrap.min.css
+│           │   ├── images
+│           │   └── js
+│           │       └── bootstrap.min.js
+│           └── WEB-INF
+│               ├── views
+│               │   └── hello.jsp
+|               ├── appconfig-mvc.xml
+│               ├── appconfig-root.xml
+│               └── web.xml
+└── pom.xml
+
+
+## Basic Spring MVC with Rest Controller:
+------------------------------------------
+
+	-> https://www.baeldung.com/spring-controllers
+
+## Application Context:
+--------------------------
+
+    -> This Spring bean configuration file will be common for all the Servlets that are available.
+    -> To load this applicationContext.xml, we use ContextLoaderListener.
+
+## War Construction:
+----------------------
+
+    -> Classpath is nothing but /war/WEB-INF/classes
+    -> Classpath jars will be present under /war/WEB-INF/lib/
+    -> src/main/resources --->>> /war/WEB-INF/classes/
+
+## Hibernate Configuration XML:
+--------------------------------
+
+    -> Create the hibernate.cfg.xml under src/resources/META-INF/
+    -> After generating the war file, we can find this file in WEB-INF/classes/META-INF/
+
+## Hibernate Transaction Management:
+---------------------------------------
+
+    -> https://www.marcobehler.com/guides/spring-transaction-management-transactional-in-depth
+	-> https://docs.spring.io/spring-framework/docs/current/reference/html/data-access.html
+
+## Method visibility and @Transactional:
+-----------------------------------------
+
+	-> When you use proxies, you should apply the @Transactional annotation only to methods with public visibility.
+	-> If you annotate for the protected, private or package-visible methods with the @Transactional annotation, no error is raised, but the annotated method does not exhibit the configured transactional settings.
+	-> If you need to annotate non-public methods, consider using AspectJ.
+	-> In proxy mode (which is the default), only external method calls coming in through the proxy are intercepted.
+	-> Even the method has nested transactions, only the outer transaction will be considered and no other transaction will be created.
+	-> 
+
+## Logging Frameworks:
+-----------------------
+
+    -> https://mkyong.com/spring-mvc/spring-mvc-logback-slf4j-example/
+
+
+
+## Open Questions?
+----------------------
+
+    -> How maven war plugin constructs a war file?
+    -> Can we have multiple Application Context files ?
+
+## Logging Levels:
+---------------------
+
+    -> FATAL
+    -> ERROR
+    -> WARN
+    -> INFO
+    -> DEBUG
+    -> TRACE
+    -> ALL
+
+    -> If we set the logging level as INFO; All the FATAL, ERROR, WARN, INFO messages can be seen.
